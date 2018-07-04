@@ -5,7 +5,7 @@ module.exports = {
         "comma-dangle": ["error", "never"],
         "class-methods-use-this": 0,
         "camelcase": 0,
-        "no-param-reassign": 1
+        "no-param-reassign": 0
     },
     "globals": {
         "Promise": true,

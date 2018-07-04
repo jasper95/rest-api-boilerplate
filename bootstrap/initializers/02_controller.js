@@ -24,8 +24,9 @@ export default (self) => {
     .readdirAsync(controllers_path)
     .map((file) => {
       if (file && file.includes('.js')) {
-        const Controller = new (require(`${controllers_path}/${file}`).default)()
+        const Controller = new (require(`${controllers_path}/${file}`).default)() // eslint-disable-line
         self.controllers[file.split('.')[0]] = createProxy(Controller, handler)
       }
+      return null
     })
 }

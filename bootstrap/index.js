@@ -32,7 +32,7 @@ export default async (server) => {
   return fs.readdirAsync(dir)
     .then(files => files.sort())
     .mapSeries((file) => {
-      const { default: initializer } = require(path.join(dir, file))
+      const { default: initializer } = require(`${dir}/${file}`) // eslint-disable-line
       initializer(context)
       return null
     })
