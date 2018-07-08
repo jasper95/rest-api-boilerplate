@@ -36,6 +36,32 @@ module.exports = {
           on_delete: 'RESTRICT'
         }
       ]
+    },
+    {
+      table_name: 'tbl_UserAuth',
+      columns: [
+        {
+          column_name: 'user_id',
+          type: 'uuid',
+          foreign_key: true,
+          required: true,
+          reference_table: 'tbl_User',
+          reference_column: 'id',
+          on_update: 'CASCADE',
+          on_delete: 'RESTRICT'
+        },
+        {
+          column_name: 'password',
+          type: 'string',
+          default: '',
+          required: true
+        },
+        {
+          column_name: 'salt',
+          type: 'string',
+          required: true
+        }
+      ]
     }
   ]
 }

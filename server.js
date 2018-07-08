@@ -4,6 +4,7 @@ import winston from 'winston'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 import bootstrap from './bootstrap'
+import { auth } from './middlewares'
 
 dotenv.config() // load env-variables
 
@@ -50,8 +51,8 @@ server.use(restify.plugins.fullResponse())
 server.use(restify.plugins.acceptParser(server.acceptable))
 server.use(restify.plugins.queryParser({ mapParams: true }))
 server.use(restify.plugins.bodyParser({ mapParams: true }))
-server.use(restify.plugins.authorizationParser());
-
+server.use(restify.plugins.authorizationParser())
+server.use(auth);
 
 (async () => {
   await bootstrap(server)

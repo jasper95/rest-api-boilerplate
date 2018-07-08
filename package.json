@@ -14,8 +14,9 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "dotenv": "^6.0.0",
+    "jsonwebtoken": "^8.3.0",
     "knex": "^0.14.6",
-    "knex-wrapper": "^1.0.14",
+    "knex-wrapper": "^1.0.15",
     "lodash": "^4.17.10",
     "morgan": "^1.9.0",
     "nconf": "^0.10.0",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",

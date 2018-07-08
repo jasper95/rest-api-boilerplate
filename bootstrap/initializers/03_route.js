@@ -1,5 +1,5 @@
 export default (context) => {
-  const routes_path = `${process.cwd()}/src/routes`
+  const routes_path = `${process.cwd()}/app/routes`
   return fs
     .readdirAsync(routes_path)
     .map((file) => {
