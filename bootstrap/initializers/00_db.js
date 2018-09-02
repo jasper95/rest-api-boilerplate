@@ -18,20 +18,13 @@ export default (self) => {
     }
   }
   const { database, port, host } = config.connection
-  const handler = {
-    get(target, prototype, receiver) {
-      const targetValue = Reflect.get(target, prototype, receiver)
-      if (prototype in Object.getPrototypeOf(target) && !prototype.includes('_')
-       && typeof targetValue === 'function') {
-        return (...args) => {
-          self.log('info', '%s - %s Params:', target.constructor.name, prototype, util.inspect(args))
-          return targetValue.apply(target, args)
-        }
-      }
-      return targetValue
+  const handler = (targetValue, { prototype, target }, ...args) => {
+    if (!prototype.includes('_')) {
+      self.log('info', '%s - %s Params:', target.constructor.name, prototype, util.inspect(args))
     }
+    return targetValue.apply(target, args)
   }
-  const query_wrapper = new Proxy(new QueryWrapper(db_schema, knex, config), handler)
+  const query_wrapper = self.createProxy(new QueryWrapper(db_schema, knex, config), handler)
   self.DB = query_wrapper
   self.knex = query_wrapper.knex
   const schema_builder = new SchemaBuilder(db_schema, query_wrapper)
