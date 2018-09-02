@@ -8,15 +8,5 @@ module.exports = {
         "no-param-reassign": 0,
         "import/prefer-default-export": 0,
         "no-throw-literal": 0
-    },
-    "globals": {
-        "Promise": true,
-        "fs": true,
-        "util": true,
-        "createProxy": true,
-        "DB": true,
-        "knex": true,
-        "_": true,
-        "log": true
     }
 };

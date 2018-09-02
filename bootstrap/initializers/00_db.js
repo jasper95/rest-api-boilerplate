@@ -3,9 +3,10 @@ import {
   QueryWrapper
 } from 'knex-wrapper'
 import knex from 'knex'
+import util from 'util'
 import db_schema from '../../config/db_schema'
 
-export default () => {
+export default (self) => {
   const config = {
     client: process.env.DB_CLIENT,
     connection: {
@@ -18,18 +19,23 @@ export default () => {
   }
   const { database, port, host } = config.connection
   const handler = {
-    apply(target, context, args) {
-      if (!this.prototype.includes('_')) {
-        log('info', '%s - %s Params:', this.class, this.prototype, util.inspect(args))
+    get(target, prototype, receiver) {
+      const targetValue = Reflect.get(target, prototype, receiver)
+      if (prototype in Object.getPrototypeOf(target) && !prototype.includes('_')
+       && typeof targetValue === 'function') {
+        return (...args) => {
+          self.log('info', '%s - %s Params:', target.constructor.name, prototype, util.inspect(args))
+          return targetValue.apply(target, args)
+        }
       }
-      return Reflect.apply(target, context, args)
+      return targetValue
     }
   }
-  const query_wrapper = createProxy(new QueryWrapper(db_schema, knex, config), handler)
-  global.DB = query_wrapper
-  global.knex = query_wrapper.knex
+  const query_wrapper = new Proxy(new QueryWrapper(db_schema, knex, config), handler)
+  self.DB = query_wrapper
+  self.knex = query_wrapper.knex
   const schema_builder = new SchemaBuilder(db_schema, query_wrapper)
   return schema_builder.setupSchema()
-    .then(() => log('info', 'Connected to Database [Connection: %s:%s, Name: %s]', host, port, database))
-    .catch(err => log('error', 'Error setting up schema [Error: %s]', util.inspect(err)))
+    .then(() => self.log('info', 'Connected to Database [Connection: %s:%s, Name: %s]', host, port, database))
+    .catch(err => self.log('error', 'Error setting up schema [Error: %s]', util.inspect(err)))
 }

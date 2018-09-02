@@ -1,3 +1,5 @@
+import { forIn } from 'lodash'
+
 const Routes = {}
 Routes.get = (route, controller) => {
   route.get('/user', controller.getUserList)
@@ -13,7 +15,7 @@ Routes.del = () => {
 
 }
 module.exports = ({ server, controllers }, name) => {
-  _.forIn(Routes, (method) => {
+  forIn(Routes, (method) => {
     method(server, controllers[name])
   })
 }

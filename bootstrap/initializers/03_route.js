@@ -1,3 +1,8 @@
+import bluebird from 'bluebird'
+import fs from 'fs'
+
+bluebird.promisifyAll(fs)
+
 export default (context) => {
   const routes_path = `${process.cwd()}/app/routes`
   return fs

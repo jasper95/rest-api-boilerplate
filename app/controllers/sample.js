@@ -1,17 +1,22 @@
 export default class SampleController {
+  constructor({ DB, knex }) {
+    this.DB = DB
+    this.knex = knex
+  }
+
   async getCompanyList() {
-    return DB.filter('tbl_Company')
+    return this.DB.filter('tbl_Company')
   }
 
   async createCompany({ params }) {
-    return DB.insert('tbl_Company', params)
+    return this.DB.insert('tbl_Company', params)
   }
 
   async updateCompany({ params }) {
-    return DB.updateById('tbl_Company', params)
+    return this.DB.updateById('tbl_Company', params)
   }
 
   async deleteCompany({ params }) {
-    return DB.deleteById('tbl_Company', params)
+    return this.DB.deleteById('tbl_Company', params)
   }
 }

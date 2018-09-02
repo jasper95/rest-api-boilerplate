@@ -32,7 +32,7 @@ const logger = createLogger({
     format.colorize(),
     format.splat(),
     format.simple(),
-    format.printf(({ level, message, timestamp }) => `${level}: ${message} ${timestamp}`)
+    format.printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`)
   ),
   transports: [new transports.Console()]
 })
@@ -43,7 +43,7 @@ const morgan_opts = {
   }
 }
 
-global.log = (level = 'info', message, ...args) => {
+const log = (level = 'info', message, ...args) => {
   logger[level](message, ...args)
 }
 
@@ -58,7 +58,7 @@ server.use(restify.plugins.authorizationParser())
 server.use(auth);
 
 (async () => {
-  await bootstrap(server)
+  await bootstrap({ log, server })
   const message = `Application starting in ${ENV} environment on http://${APP_NAME}:${PORT}`
   server.listen(PORT, () => logger.info(message))
 })()
