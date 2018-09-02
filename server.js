@@ -1,6 +1,6 @@
 import restify from 'restify'
 import corsMiddleware from 'restify-cors-middleware'
-import winston from 'winston'
+import { createLogger, transports, format } from 'winston'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 import bootstrap from './bootstrap'
@@ -26,27 +26,30 @@ const cors = corsMiddleware({
   exposeHeaders: ['X-Api-Version, X-Request-Id, X-Response-Time']
 })
 
-winston.remove(winston.transports.Console)
-
-const logger = winston.add(winston.transports.Console, {
-  timestamp: true,
-  colorize: true
+const logger = createLogger({
+  format: format.combine(
+    format.timestamp(),
+    format.colorize(),
+    format.splat(),
+    format.simple(),
+    format.printf(({ level, message, timestamp }) => `${level}: ${message} ${timestamp}`)
+  ),
+  transports: [new transports.Console()]
 })
 
-const log = {
+const morgan_opts = {
   stream: {
     write: message => logger.info(message)
-  },
-  message: ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
+  }
 }
 
 global.log = (level = 'info', message, ...args) => {
-  winston[level](message, ...args)
+  logger[level](message, ...args)
 }
 
 server.pre(cors.preflight)
 server.use(cors.actual)
-server.use(morgan(log.message, { stream: log.stream }))
+server.use(morgan('combined', morgan_opts))
 server.use(restify.plugins.fullResponse())
 server.use(restify.plugins.acceptParser(server.acceptable))
 server.use(restify.plugins.queryParser({ mapParams: true }))
@@ -57,5 +60,5 @@ server.use(auth);
 (async () => {
   await bootstrap(server)
   const message = `Application starting in ${ENV} environment on http://${APP_NAME}:${PORT}`
-  server.listen(PORT, () => winston.info(message))
+  server.listen(PORT, () => logger.info(message))
 })()
