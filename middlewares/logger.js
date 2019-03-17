@@ -12,7 +12,7 @@ const logger = createLogger({
   transports: [new transports.Console()]
 })
 
-export const request_logger = morgan('combined', {
+export const requestLogger = morgan('combined', {
   stream: {
     write: message => logger.info(message)
   }

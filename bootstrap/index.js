@@ -1,26 +1,18 @@
 import bluebird from 'bluebird'
-import fs from 'fs'
 import path from 'path'
 import util from 'util'
-
-bluebird.promisifyAll(fs)
+import {
+  readDirPromise
+} from '../utils'
 
 export default async ({ server, log }) => {
-  const createProxy = (object, cb) => {
-    const handler = {
-      get(target, prototype, receiver) {
-        const targetValue = Reflect.get(target, prototype, receiver)
-        if (prototype in Object.getPrototypeOf(target) && typeof targetValue === 'function') {
-          return (...args) => cb(targetValue, { target, prototype }, ...args)
-        }
-        return targetValue
-      }
-    }
-    return new Proxy(object, handler)
-  }
-  const context = { server, log, createProxy }
+  const context = { server, log }
   const dir = path.resolve(__dirname, './initializers')
-  return fs.readdirAsync(dir)
+
+  global.Promise = bluebird
+  global.util = util
+
+  return readDirPromise(dir)
     .then(files => files.sort())
     .mapSeries((file) => {
       const { default: initializer } = require(`${dir}/${file}`) // eslint-disable-line

@@ -2,11 +2,13 @@ import restify from 'restify'
 import dotenv from 'dotenv'
 import bootstrap from './bootstrap'
 import {
-  auth, logger, cors, request_logger
+  auth, logger, cors, requestLogger
 } from './middlewares'
+import {
+  serviceLocator
+} from './utils'
 
 dotenv.config() // load env-variables
-
 
 const APP_NAME = process.env.npm_package_name
 const ENV = process.env.NODE_ENV || 'default'
@@ -22,9 +24,11 @@ const log = (level = 'info', message, ...args) => {
   logger[level](message, ...args)
 }
 
+serviceLocator.registerService('logger', log)
+
 server.pre(cors.preflight)
 server.use(cors.actual)
-server.use(request_logger)
+server.use(requestLogger)
 server.use(restify.plugins.fullResponse())
 server.use(restify.plugins.acceptParser(server.acceptable))
 server.use(restify.plugins.queryParser({ mapParams: true }))

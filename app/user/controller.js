@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import {
   generateHash,
   generateSalt
-} from '../utils/hash'
+} from '../../utils'
 
 export default class UserController {
   constructor({ DB, knex }) {

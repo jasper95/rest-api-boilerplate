@@ -5,6 +5,9 @@ import {
 import knex from 'knex'
 import util from 'util'
 import db_schema from '../../config/db_schema'
+import {
+  createProxy
+} from '../../utils'
 
 export default (self) => {
   const config = {
@@ -18,13 +21,14 @@ export default (self) => {
     }
   }
   const { database, port, host } = config.connection
+  const { log } = self
   const handler = (targetValue, { prototype, target }, ...args) => {
     if (!prototype.includes('_')) {
-      self.log('info', '%s - %s Params:', target.constructor.name, prototype, util.inspect(args))
+      log('info', '%s - %s Params: %s', target.constructor.name, prototype, util.inspect(args))
     }
     return targetValue.apply(target, args)
   }
-  const query_wrapper = self.createProxy(new QueryWrapper(db_schema, knex, config), handler)
+  const query_wrapper = createProxy(new QueryWrapper(db_schema, knex, config), handler)
   self.DB = query_wrapper
   self.knex = query_wrapper.knex
   const schema_builder = new SchemaBuilder(db_schema, query_wrapper)
